@@ -1,27 +1,29 @@
 import requests
-import os
+import sys
 
-# 你的 Google Site 链接
 url = "https://sites.google.com/view/waylonlee/home"
 
-# 设置请求头，伪装成浏览器，防止被直接拦截
+# 增加更真实的浏览器伪装头
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5"
 }
 
 try:
     print(f"正在抓取网页: {url}")
-    response = requests.get(url, headers=headers)
-    response.raise_for_status() # 检查请求是否成功
+    response = requests.get(url, headers=headers, timeout=10)
     
-    # 将抓取到的 HTML 保存到本地文件中
-    # 我们把它保存在仓库的一个特定目录里，比如直接放在根目录
+    # 如果遇到 404, 403 等错误，直接抛出异常
+    response.raise_for_status() 
+    
     output_filename = "google_site_content.html"
-    
     with open(output_filename, "w", encoding="utf-8") as f:
         f.write(response.text)
         
-    print(f"成功！网页内容已保存到 {output_filename}")
+    print(f"✅ 成功！网页内容已保存到 {output_filename}")
 
-except Exception as e:
-    print(f"抓取失败: {e}")
+except requests.exceptions.RequestException as e:
+    # 遇到错误时，打印错误并强制程序以失败状态(exit code 1)退出
+    print(f"❌ 抓取失败: {e}")
+    sys.exit(1)
