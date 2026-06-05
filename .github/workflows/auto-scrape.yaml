@@ -1,0 +1,43 @@
+name: Auto Scrape Google Site
+
+on:
+  schedule:
+    # 每天 UTC 时间 00:00 (北京时间 08:00) 执行一次
+    - cron: '0 0 * * *'
+  # 允许你在 GitHub 网页上点击按钮手动运行，方便测试
+  workflow_dispatch: 
+
+jobs:
+  scrape-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 检出代码仓库
+      uses: actions/checkout@v3
+
+    - name: 配置 Python 环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 安装依赖
+      run: |
+        pip install -r requirements.txt
+
+    - name: 运行抓取脚本
+      run: |
+        python scrape.py
+
+    - name: 检查文件是否有变动并提交
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action Bot"
+        git add google_site_content.html
+        
+        # 检查是否有未提交的变动，如果有则 commit，没有则跳过
+        if ! git diff-index --quiet HEAD; then
+          git commit -m "Auto-update: 同步最新的 Google Site 内容"
+          git push
+        else
+          echo "内容没有变化，无需提交。"
+        fi

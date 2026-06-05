@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; height: 100%; }
+        #container { width: 100%; height: calc(100% - 50px); }
+        iframe { width: 100%; height: 100%; border: none; }
+        button { width: 100%; height: 50px; font-size: 18px; cursor: pointer; background: #1a73e8; color: white; border: none; }
+        button:hover { background: #1557b0; }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <iframe 
+            src="./google_site_content.html" 
+            allow="fullscreen"
+        ></iframe>
+    </div>
+    <button onclick="toggleFullScreen()">⛶ 全屏显示</button>
+
+    <script>
+        function toggleFullScreen() {
+            const container = document.getElementById('container');
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => alert(`全屏失败: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>
