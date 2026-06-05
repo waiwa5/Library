@@ -1,46 +1,27 @@
-name: Auto Scrape Google Site
+import requests
+import os
 
-on:
-  schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch: 
+# 你的 Google Site 链接
+url = "https://sites.google.com/view/waylonlee/home"
 
-# 新增这行环境变量，强制使用最新的 Node.js 24，彻底消除警告
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
+# 设置请求头，伪装成浏览器，防止被直接拦截
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+}
 
-jobs:
-  scrape-and-commit:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: 检出代码仓库
-      # 升级到 v4
-      uses: actions/checkout@v4 
-
-    - name: 配置 Python 环境
-      # 升级到 v5
-      uses: actions/setup-python@v5 
-      with:
-        python-version: '3.10'
-
-    - name: 安装依赖
-      run: |
-        pip install -r requirements.txt
-
-    - name: 运行抓取脚本
-      run: |
-        python scrape.py
-
-    - name: 检查文件是否有变动并提交
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action Bot"
-        git add google_site_content.html
+try:
+    print(f"正在抓取网页: {url}")
+    response = requests.get(url, headers=headers)
+    response.raise_for_status() # 检查请求是否成功
+    
+    # 将抓取到的 HTML 保存到本地文件中
+    # 我们把它保存在仓库的一个特定目录里，比如直接放在根目录
+    output_filename = "google_site_content.html"
+    
+    with open(output_filename, "w", encoding="utf-8") as f:
+        f.write(response.text)
         
-        if ! git diff-index --quiet HEAD; then
-          git commit -m "Auto-update: 同步最新的 Google Site 内容"
-          git push
-        else
-          echo "内容没有变化，无需提交。"
-        fi
+    print(f"成功！网页内容已保存到 {output_filename}")
+
+except Exception as e:
+    print(f"抓取失败: {e}")
