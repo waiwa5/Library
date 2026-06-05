@@ -32,10 +32,14 @@ jobs:
       run: |
         python scrape.py
 
+    
     - name: 安装依赖
       run: |
         pip install -r requirements.txt
-        playwright install chromium # 这是必须新增的一行，用于安装虚拟浏览器
+        # 下载 Chromium 浏览器内核
+        python -m playwright install chromium
+        # 安装 Linux 运行浏览器必须的系统底层依赖库（最关键的一步！）
+        sudo python -m playwright install-deps
 
     - name: 运行抓取脚本
       run: |
