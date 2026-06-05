@@ -2,10 +2,12 @@ name: Auto Scrape Google Site
 
 on:
   schedule:
-    # 每天 UTC 时间 00:00 (北京时间 08:00) 执行一次
     - cron: '0 0 * * *'
-  # 允许你在 GitHub 网页上点击按钮手动运行，方便测试
   workflow_dispatch: 
+
+# 新增这行环境变量，强制使用最新的 Node.js 24，彻底消除警告
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
 
 jobs:
   scrape-and-commit:
@@ -13,10 +15,12 @@ jobs:
 
     steps:
     - name: 检出代码仓库
-      uses: actions/checkout@v3
+      # 升级到 v4
+      uses: actions/checkout@v4 
 
     - name: 配置 Python 环境
-      uses: actions/setup-python@v4
+      # 升级到 v5
+      uses: actions/setup-python@v5 
       with:
         python-version: '3.10'
 
@@ -34,7 +38,6 @@ jobs:
         git config --local user.name "GitHub Action Bot"
         git add google_site_content.html
         
-        # 检查是否有未提交的变动，如果有则 commit，没有则跳过
         if ! git diff-index --quiet HEAD; then
           git commit -m "Auto-update: 同步最新的 Google Site 内容"
           git push
