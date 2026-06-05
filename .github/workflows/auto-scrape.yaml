@@ -32,15 +32,11 @@ jobs:
       run: |
         python scrape.py
 
-    - name: 检查文件是否有变动并提交
+    - name: 安装依赖
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action Bot"
-        git add google_site_content.html
-        
-        if ! git diff-index --quiet HEAD; then
-          git commit -m "Auto-update: 同步最新的 Google Site 内容"
-          git push
-        else
-          echo "内容没有变化，无需提交。"
-        fi
+        pip install -r requirements.txt
+        playwright install chromium # 这是必须新增的一行，用于安装虚拟浏览器
+
+    - name: 运行抓取脚本
+      run: |
+        python scrape.py
