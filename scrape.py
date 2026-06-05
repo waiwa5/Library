@@ -1,27 +1,26 @@
-import requests
-import os
+from playwright.sync_api import sync_playwright
+import sys
 
-# 你的 Google Site 链接
 url = "https://sites.google.com/view/waylonlee/home"
 
-# 设置请求头，伪装成浏览器，防止被直接拦截
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
-}
-
-try:
-    print(f"正在抓取网页: {url}")
-    response = requests.get(url, headers=headers)
-    response.raise_for_status() # 检查请求是否成功
-    
-    # 将抓取到的 HTML 保存到本地文件中
-    # 我们把它保存在仓库的一个特定目录里，比如直接放在根目录
-    output_filename = "google_site_content.html"
-    
-    with open(output_filename, "w", encoding="utf-8") as f:
-        f.write(response.text)
+with sync_playwright() as p:
+    # 启动一个隐藏的 Chromium 浏览器
+    browser = p.chromium.launch(headless=True)
+    page = browser.new_page()
+    try:
+        print(f"正在模拟真实浏览器打开网页: {url}")
+        # wait_until="networkidle" 表示等待页面上的动态内容和网络请求都加载完毕
+        page.goto(url, timeout=30000, wait_until="networkidle")
         
-    print(f"成功！网页内容已保存到 {output_filename}")
-
-except Exception as e:
-    print(f"抓取失败: {e}")
+        # 获取渲染后的完整 HTML
+        content = page.content()
+        
+        with open("google_site_content.html", "w", encoding="utf-8") as f:
+            f.write(content)
+            
+        print("✅ 成功！页面已保存。")
+    except Exception as e:
+        print(f"❌ 抓取失败: {e}")
+        sys.exit(1)
+    finally:
+        browser.close()
