@@ -1,26 +1,29 @@
-from playwright.sync_api import sync_playwright
+import requests
 import sys
 
 url = "https://sites.google.com/view/waylonlee/home"
 
-with sync_playwright() as p:
-    # 启动一个隐藏的 Chromium 浏览器
-    browser = p.chromium.launch(headless=True)
-    page = browser.new_page()
-    try:
-        print(f"正在模拟真实浏览器打开网页: {url}")
-        # wait_until="networkidle" 表示等待页面上的动态内容和网络请求都加载完毕
-        page.goto(url, timeout=30000, wait_until="networkidle")
+# 增加更真实的浏览器伪装头
+headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5"
+}
+
+try:
+    print(f"正在抓取网页: {url}")
+    response = requests.get(url, headers=headers, timeout=10)
+    
+    # 如果遇到 404, 403 等错误，直接抛出异常
+    response.raise_for_status() 
+    
+    output_filename = "google_site_content.html"
+    with open(output_filename, "w", encoding="utf-8") as f:
+        f.write(response.text)
         
-        # 获取渲染后的完整 HTML
-        content = page.content()
-        
-        with open("google_site_content.html", "w", encoding="utf-8") as f:
-            f.write(content)
-            
-        print("✅ 成功！页面已保存。")
-    except Exception as e:
-        print(f"❌ 抓取失败: {e}")
-        sys.exit(1)
-    finally:
-        browser.close()
+    print(f"✅ 成功！网页内容已保存到 {output_filename}")
+
+except requests.exceptions.RequestException as e:
+    # 遇到错误时，打印错误并强制程序以失败状态(exit code 1)退出
+    print(f"❌ 抓取失败: {e}")
+    sys.exit(1)
