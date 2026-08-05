@@ -1,151 +1,1027 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-    <title>Untitled Document</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <link type="text/css" href="resources/css/reset.css" rel="Stylesheet" />
-    <link type="text/css" href="resources/css/default.css" rel="Stylesheet" />
-    <link rel="shortcut icon" href="resources/images/favicon_play.ico" />
-    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600' rel='stylesheet'>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Library Staff Directory</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --navy-dark:#1b365d;
+    --navy-mid:#1a4a9c;
+    --navy-gradient: linear-gradient(90deg, #2f5fad 0%, #1b365d 100%);
+    --text-heading:#2c3e50;
+    --text-body:#666666;
+    --text-contact:#5c7290;
+    --border-light:#e3e9f2;
+    --card-shadow: 0 2px 10px rgba(30, 60, 120, 0.07);
+    --avatar-border:#f1f2f4;
+  }
 
-    <script type="text/javascript">
-        if (location.href.toString().indexOf('file://localhost/') == 0) {
-            location.href = location.href.toString().replace('file://localhost/', 'file:///');
-        }
-    </script>
+  *{ box-sizing:border-box; }
 
-    <!--<link type="text/css" rel="Stylesheet" href="plugins/sitemap/styles/sitemap.css" />
-    <link type="text/css" rel="Stylesheet" href="plugins/page_notes/styles/page_notes.css" />
-    <link type="text/css" rel="Stylesheet" href="plugins/debug/styles/debug.css" />
-    <link type="text/css" rel="Stylesheet" href="plugins/handoff/styles/handoff.css" />
-    <link type="text/css" rel="Stylesheet" href="plugins/handoff/styles/codemirror.css" />-->
+  body{
+    margin:0;
+    padding:40px 20px;
+    background:#ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .container{
+    max-width:1720px;
+    margin:0 auto;
+  }
+
+  /* ===== Tabs ===== */
+  .tabbar{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom:1px solid var(--border-light);
+    margin-bottom:36px;
+  }
+
+  .tab-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:700;
+    font-size:24px;
+    color:#8fa3bf;
+    padding:14px 4px 18px 4px;
+    position:relative;
+    transition:color .2s ease;
+    text-align:center;
+    width:100%;
+  }
+
+  .tab-btn:hover{ color:#5c7ba8; }
+
+  .tab-btn.active{
+    color:var(--navy-dark);
+  }
+
+  .tab-btn.active::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:-1px;
+    height:4px;
+    background:var(--navy-dark);
+    border-radius:2px;
+  }
+
+  /* ===== Panels ===== */
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  /* ===== Staff Card ===== */
+  .staff-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .staff-card{
+    background:#ffffff;
+    border-radius:12px;
+    box-shadow: var(--card-shadow);
+    position:relative;
+    overflow:hidden;
+    min-height:160px;
+    display:flex;
+    align-items:center;
+    padding:0 40px;
+    gap:36px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .staff-card:hover {
+    transform: translateY(-4px); 
+    box-shadow: 0 6px 12px rgba(30, 60, 120, 0.12); 
+  }
+
+  .staff-card::before{
+    content:'';
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:10px;
+    background:var(--navy-dark);
+  }
+
+  .avatar{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid var(--avatar-border);
+    flex-shrink:0;
+  }
+
+  .staff-name{
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight:700;
+    font-size:24px;
+    color:var(--text-heading);
+    margin:0 0 6px 0;
+  }
+
+  .name-block{
+    flex:0 0 380px;
+    text-align:left;
+  }
+
+  .staff-role{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:24px;
+    color:var(--text-body);
+    flex:1;
+  }
+
+  .staff-role-stacked{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:20px;
+    color:var(--text-body);
+    margin:0;
+    text-align:left;
+  }
+
+  .contact-block{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:18px;
+    color:var(--text-contact);
+    flex:0 0 320px;
+    text-align:left;
+  }
+
+  .contact-block a{
+    color:var(--text-contact);
+    text-decoration:none;
+  }
+
+  .contact-block i{
+    width:20px;
+    margin-right:8px;
+    color:#1a4a9c;
+  }
+
+  .faculty-block{
+    flex:0 0 260px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:700;
+    font-size:22px;
+    color:var(--text-heading);
+  }
+
+  .qualification-block{
+    flex:0 0 460px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:18px;
+    color:var(--text-body);
+    line-height:1.35;
+  }
+
+  /* ===== Tab 3 intro card ===== */
+  .intro-card{
+    background:#ffffff;
+    border:1px solid #eff4f9;
+    border-radius:10px;
+    box-shadow: var(--card-shadow);
+    padding:32px 48px;
+    margin-bottom:30px;
+    text-align:left;
+  }
+
+  .intro-card h2{
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:700;
+    font-size:24px;
+    color:var(--text-heading);
+    margin:0 0 18px 0;
+    text-align:center;
+  }
+
+  .intro-card p{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:18px;
+    color:var(--text-body);
+    max-width:1000px;
+    margin:10px 0;
+    text-align:left;
+  }
+
+  .intro-list{
+    list-style:none;
+    padding:0;
+    margin:14px 0;
+    text-align:left;
+    max-width:600px;
+  }
+
+  .intro-list li{
+    font-weight:700;
+    color:var(--text-heading);
+    font-size:18px;
+    padding:4px 0 4px 22px;
+    position:relative;
+  }
+
+  .intro-list li::before{
+    content:"•";
+    position:absolute;
+    left:4px;
+    color:var(--text-heading);
+  }
+
+  /* ===== Tab 4 Accordion ===== */
+  .accordion{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .acc-level1{
+    background:var(--navy-gradient);
+    color:#fff;
+    border-radius:8px;
+    padding:20px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:700;
+    font-size:22px;
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .acc-level1 .chevron{
+    transition:transform .25s ease;
+  }
+
+  .acc-level1.open .chevron{
+    transform:rotate(180deg);
+  }
+
+  .acc-level1-body {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 0;
+    /* 使用 cubic-bezier 让动画更自然顺滑 */
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                padding-top 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.6s;
+  }
+
+  .acc-level1-body.open{ 
+    max-height: 3000px; /* 足够容纳内部展开高度的极大值 */
+    padding-top: 12px;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .acc-level2{
+    background:#ffffff;
+    border:2px solid var(--navy-dark);
+    border-radius:8px;
+    padding:16px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:700;
+    font-size:18px;
+    letter-spacing:0.5px;
+    color:var(--navy-dark);
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .acc-level2 .plusminus{
+    font-size:22px;
+    font-weight:700;
+    width:20px;
+    text-align:center;
+  }
+
+  .acc-level2-body{
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.6s;
+  }
+
+  .acc-level2-body.open{ 
+    max-height: 1500px; /* 足够容纳员工卡片的高度 */
+    padding: 12px 0;
+    opacity: 1;
+    visibility: visible;
+   }
+
+  .acc-level2-body .staff-card{
+    min-height:150px;
+  }
+
+  @media (max-width: 900px){
+    .staff-card{ flex-wrap:wrap; padding:20px; gap:16px; }
+    .name-block, .staff-role, .contact-block, .faculty-block, .qualification-block{ flex:1 1 100%; }
+    .tab-btn{ font-size:16px; padding:12px 4px; }
+  }
+</style>
 </head>
-<body scroll="no" class="hashover" style="overflow: hidden;">
-    <div id="topPanel">
-        <div id="interfaceControlFrame">
-            <div id="interfaceControlFrameLeft">
-                <div id="interfaceControlFrameMinimizeContainer">
-                    <a title="Collapse" id="interfaceControlFrameMinimizeButton">
-                        <div id="minimizeArrow" class="minimizeButtonHover minimizeIcon"></div>
-                        <div id="minimizeX" class="minimizeButton minimizeIcon"></div>
-                    </a>
-                </div>
-                <div id="interfaceControlFrameCloseContainer">
-                    <a title="Close" id="interfaceControlFrameCloseButton">CLOSE</a>
-                </div>
+<body>
 
-                <div id="sitemapControlFrameContainer" title="Project Pages">
-                    <div id="projectControlFrameHeaderContainer">
-                        <ul id="projectControlFrameHeader"></ul>
-                    </div>
-                    
-                    <div id="interfacePageNameContainer">
-                        <div id="interfacePageNameButton" class='pageNameHeader'>
-                            &nbsp;
-                        </div>
-                        <div id="interfacePageCount" class='pageCountHeader'>
-                        </div>
-                    </div>
-                </div>
+<div class="container">
 
+  <div class="tabbar">
+    <button class="tab-btn active" data-tab="tab1">Librarians Management</button>
+    <button class="tab-btn" data-tab="tab2">The librarians</button>
+    <button class="tab-btn" data-tab="tab3">Liaison Librarians</button>
+    <button class="tab-btn" data-tab="tab4">Departments</button>
+  </div>
 
-                <div id="interfaceAdaptiveViewsContainer" title="Adaptive Views">
-                    <div id="interfaceAdaptiveViewsIconButton">&nbsp;</div>
-                    <div id="interfaceAdaptiveViewsButton" class='adaptiveViewHeader'>
-                        &nbsp;
-                    </div>
-                    <div id="adaptiveViewsDropdown" class="caret"></div>
-                </div>
-            </div>
-            
-            <div id="interfaceControlFrameContainer">
-                <div id="handoffControlFrameHeaderContainer">
-                    <ul id="handoffControlFrameHeader"></ul>
-                </div>
-                <div id="interfaceControlFrameLogoContainer">
-                    <div id="previewNotice">
-                        Local Preview
-                    </div>
-                </div>
-            </div>
-
-            <div id="interfaceControlFrameRight">
-                <div id="publishContainer">
-                    <a id="publishButton">Share Prototype</a>
-                </div>
-                
-                <div id="inspectControlFrameHeaderContainer">
-                    <ul id="inspectControlFrameHeader">
-                        <li id="overflowBtn">
-                            <a id="overflowMenuButton" title="View Options"></a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div id="separatorContainer">
-                    <div class="separator"></div>
-                </div>
-
-                <div id="overflowMadeWith"><a href="https://www.axure.com" id="axureLogo" target="_blank"></a></div>
-
-            </div>
-
+  <!-- TAB 1: Librarians Management -->
+  <div class="panel active" id="tab1">
+    <div class="staff-list">
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/my.jpg" alt="Mahbob Yusof">
+        <div class="name-block">
+          <p class="staff-name">Mahbob Yusof</p>
+          <p class="staff-role-stacked">Senior Deputy Chief Librarian</p>
         </div>
+        <div class="qualification-block">MB(IT), (RMIT) , Dip.Lib.Sc (Postgraduate), (UiTM) , B.Sc(Hons), Zoology ,(UKM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:mahbobyusof@um.edu.my">mahbobyusof@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 3304</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/Ratna.jpg" alt="Ratnawati Sari Mohd Amin">
+        <div class="name-block">
+          <p class="staff-name">Ratnawati Sari Mohd Amin</p>
+          <p class="staff-role-stacked">Deputy Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UIAM), LLB(H) (UIAM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:ratna@um.edu.my">ratna@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 3304</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/Shamsiah.jpg" alt="Shamsiah Abu Bakar">
+        <div class="name-block">
+          <p class="staff-name">Shamsiah Abu Bakar</p>
+          <p class="staff-role-stacked">Deputy Chief Librarian</p>
+        </div>
+        <div class="qualification-block">AdvDip.Lib (UiTM</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:sham@um.edu.my">sham@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 3300</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/zahirah.jpg" alt="Zahirah Noor Zainal Abidin">
+        <div class="name-block">
+          <p class="staff-name">Zahirah Noor Zainal Abidin</p>
+          <p class="staff-role-stacked">Head of Museums and Art Galleries Division</p>
+        </div>
+        <div class="qualification-block">B.Mass Comm (Journalism)(UiTM), Dip.Photography(UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:zahirahnoor@um.edu.my">zahirahnoor@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 3936</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/lisdar.jpg" alt="Lisdar Abdul Wahid">
+        <div class="name-block">
+          <p class="staff-name">Lisdar Abdul Wahid</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MSc. Information Management (UiTM), B.Sc Library & Information Management (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:lisdar@um.edu.my">lisdar@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 3383</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/Mohammed-Zaki.jpg" alt="Mohammed Zaki Abd Rahman">
+        <div class="name-block">
+          <p class="staff-name">Mohammed Zaki Abd Rahman</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UiTM), B.Sc Information Studies (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:mzaki@um.edu.my">mzaki@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 3300</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/Juhaida.jpg" alt="Juhaida Abd Rahim">
+        <div class="name-block">
+          <p class="staff-name">Juhaida Abd Rahim</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UIAM), B.Islamic Revealed Knowledge & Heritage (UIAM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:juhaida@um.edu.my">juhaida@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 7744</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/Muhamad-Faizal-Abd.jpg" alt="Muhamad Faizal Abd Aziz">
+        <div class="name-block">
+          <p class="staff-name">Muhamad Faizal Abd Aziz</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MSc. Information Management (Manchester), B.Sc Information Studies (UiTM))</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:mfaizal@um.edu.my">mfaizal@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 5259</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/norida.jpg" alt="Norida Abu Bakar">
+        <div class="name-block">
+          <p class="staff-name">Norida Abu Bakar</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS(UIAM), B. Sc Computer (UTM Skudai)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:noridaa@um.edu.my">noridaa@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 3297</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/adida.jpg" alt="Adida Mohd Amin">
+        <div class="name-block">
+          <p class="staff-name">Adida Mohd Amin</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UM), B.Usul (UM), Dip.Lib (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:adida@um.edu.my">adida@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 6116</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/um-library/images/Librarian/aimi.jpg" alt="Aimi Ihsan">
+        <div class="name-block">
+          <p class="staff-name">Aimi Ihsan</p>
+          <p class="staff-role-stacked">Senior Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UIAM), B. Biomedical Science (Hons) (UIAM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:aimiihsan@um.edu.my">aimiihsan@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 7003</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/perpustakaan-universiti-malaya/images/Librarians/amir.jpg" alt="Amir Hamzah Alias">
+        <div class="name-block">
+          <p class="staff-name">Amir Hamzah Alias</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">Master of Counselling (UM), B.Sc Information Studies (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:amirhamzah@um.edu.my">amirhamzah@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>603-7967 5018</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Annurthahirah.jpg" alt="Annur Thahirah Abdul Hadi">
+        <div class="name-block">
+          <p class="staff-name">Annur Thahirah Abdul Hadi</p>
+          <p class="staff-role-stacked">Senior Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UM), B. Ed. TESL (Hons.)(MSU)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:annurhadi@um.edu.my">annurhadi@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 4782</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Aruna-J.-E.jpg" alt="Aruna J.E Thambidorai">
+        <div class="name-block">
+          <p class="staff-name">Aruna J.E Thambidorai</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UM), B.Ec (UM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:aruna@um.edu.my">aruna@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 4947</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Azrizal.jpg" alt="Azrizal Ismail">
+        <div class="name-block">
+          <p class="staff-name">Azrizal Ismail</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">B.Sc Information Studies (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:azrizal@um.edu.my">azrizal@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 6515</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Fairuz-1.jpg" alt="Fairuz Nawwar Mansor">
+        <div class="name-block">
+          <p class="staff-name">Fairuz Nawwar Mansor</p>
+          <p class="staff-role-stacked">Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS(IIUM), B.Sc Library & Information Management (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:fairuznawwar@um.edu.my">fairuznawwar@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 7003</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/faridah.jpg" alt="Faridah Salleh">
+        <div class="name-block">
+          <p class="staff-name">Faridah Salleh</p>
+          <p class="staff-role-stacked">Assistant Librarian</p>
+        </div>
+        <div class="qualification-block">Dip. Information Management (Uitm)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:faridahsalleh@um.edu.my">faridahsalleh@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 3503</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Hanani.jpg" alt="Hanani Fauzi">
+        <div class="name-block">
+          <p class="staff-name">Hanani Fauzi</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UM), B.Sc Information Studies (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:hananif@um.edu.my">hananif@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 3919</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Haniza.jpg" alt="Haniza Adnan">
+        <div class="name-block">
+          <p class="staff-name">Haniza Adnan</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UIAM), B.Sc Information Studies (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:ahaniza@um.edu.my">ahaniza@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 3382</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Haslan.jpg" alt="Haslan Tamjehi">
+        <div class="name-block">
+          <p class="staff-name">Haslan Tamjehi</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (IIUM), B.H.Sc. (Psychology) (IIUM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:haslan@um.edu.my">haslan@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 7285</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Haslina.jpg" alt="Dr. Haslina Husain">
+        <div class="name-block">
+          <p class="staff-name">Dr. Haslina Husain</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">Doctor of Philosophy(Information Management)(UiTM), MLIS (UM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:hhaslina@um.edu.my">hhaslina@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 3357</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Ilina.jpg" alt="Ilina Syazwani Musa">
+        <div class="name-block">
+          <p class="staff-name">Ilina Syazwani Musa</p>
+          <p class="staff-role-stacked">Senior Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UiTM), B.Comp.Sc (Hons)(UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:ilina@um.edu.my">ilina@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 7003</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Juhaida.jpg" alt="Juhaida Abd Rahim">
+        <div class="name-block">
+          <p class="staff-name">Juhaida Abd Rahim</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UIAM), B.Islamic Revealed Knowledge & Heritage (UIAM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:juhaida@um.edu.my">juhaida@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 3922</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/lisdar.jpg" alt="Lisdar Abdul Wahid">
+        <div class="name-block">
+          <p class="staff-name">Lisdar Abdul Wahid</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MSc. Information Management (UiTM), B.Sc Library & Information Management (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:lisdar@um.edu.my">lisdar@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 3383</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/LowQ.jpg" alt="Low Li Qin">
+        <div class="name-block">
+          <p class="staff-name">Low Li Qin</p>
+          <p class="staff-role-stacked">Project Officer</p>
+        </div>
+        <div class="qualification-block">MLIS (UIAM), B.A. (Hons) (Chinese Studies) (Malaya)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:lowliqin@um.edu.my">lowliqin@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 3840</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umcms.um.edu.my/sites/perpustakaan-universiti-malaya/images/Librarians/Manimala%20new.png?_t=1706488379" alt="Manimala Thavandran">
+        <div class="name-block">
+          <p class="staff-name">Manimala Thavandran</p>
+          <p class="staff-role-stacked">Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UM), Bachelor Library Science (UNISEL)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:manimala@um.edu.my">manimala@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-79676583</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Rizar.jpg" alt="Mohamad Rizar Mosbah">
+        <div class="name-block">
+          <p class="staff-name">Mohamad Rizar Mosbah</p>
+          <p class="staff-role-stacked">Assistant Chief Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UiTM), B.Sc Information Studies (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:rizar@um.edu.my">rizar@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 4961</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Mohd-Farid.jpg" alt="Mohd Farid Wan Mohd Zin">
+        <div class="name-block">
+          <p class="staff-name">Mohd Farid Wan Mohd Zin</p>
+          <p class="staff-role-stacked">Senior Librarian</p>
+        </div>
+        <div class="qualification-block">MLIS (UiTM), B.Sc (Hons) Information Studies (Uitm)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:mohdfarid@um.edu.my">mohdfarid@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-79677745</div>
+        </div>
+      </div>
+      <div class="staff-card">
+        <img class="avatar" src="https://umlib.um.edu.my/images/Librarian/Mohd-Samsul.jpg" alt="Mohd Samsul Ismail">
+        <div class="name-block">
+          <p class="staff-name">Mohd Samsul Ismail</p>
+          <p class="staff-role-stacked">Assistant Librarian</p>
+        </div>
+        <div class="qualification-block">Dip.Lib(UiTM), B.Sc Record Management (UiTM)</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:mohdsamsul@um.edu.my">mohdsamsul@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>03-7967 3432</div>
+        </div>
+      </div>
     </div>
-    <div id="popupContainer">
-        <div id='interfaceAdaptiveViewsListContainer'>
-        </div>
+  </div>
 
-        <div id='interfaceScaleListContainer'>
-        </div>
+  <!-- TAB 2: The librarians -->
+  <div class="panel" id="tab2">
+    <div class="staff-list">
 
-        <div id='accountLoginContainer'>
+      <div class="staff-card">
+        <img class="avatar" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200&h=200&fit=crop&crop=faces" alt="Norida Abu Bakar">
+        <div class="name-block">
+          <p class="staff-name">Norida Abu Bakar</p>
         </div>
+        <div class="staff-role">Assistant Chief Librarian</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:noridaa@um.edu.my">noridaa@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>(603) 7967 3297</div>
+        </div>
+      </div>
 
-        <div id='overflowMenuContainer'>
+      <div class="staff-card">
+        <img class="avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces" alt="Aruna J.E Thambidorai">
+        <div class="name-block">
+          <p class="staff-name">Aruna J.E Thambidorai</p>
         </div>
+        <div class="staff-role">Assistant Chief Librarian</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:aruna@um.edu.my">aruna@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>(603) 7967 4947</div>
+        </div>
+      </div>
+
+      <div class="staff-card">
+        <img class="avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces" alt="Mohammed Zaki Abd Rahman">
+        <div class="name-block">
+          <p class="staff-name">Mohammed Zaki Abd Rahman</p>
+        </div>
+        <div class="staff-role">Assistant Chief Librarian</div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:mzaki@um.edu.my">mzaki@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>(603) 7967 3300</div>
+        </div>
+      </div>
+
     </div>
-    <div id="outerContainer">
-        <div id="clippingBounds">
-            <div id="clippingBoundsScrollContainer"></div>
+  </div>
+
+  <!-- TAB 3: Liaison Librarians -->
+  <div class="panel" id="tab3">
+    <div class="intro-card">
+      <h2>What Can We Do For You</h2>
+      <p>Your liaison librarian are here to help you. Feel free to make an appointment with us.</p>
+      <ul class="intro-list">
+        <li>Group or classroom instruction</li>
+        <li>Individual consultations</li>
+        <li>Research Support</li>
+        <li>Database searching assistance and instruction</li>
+      </ul>
+      <p>If you have a need or concern, please let us know. We will make sure that you receive the right recommendation and input!</p>
+    </div>
+
+    <div class="staff-list">
+
+      <div class="staff-card">
+        <img class="avatar" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces" alt="Noorsuzila Mohamad">
+        <div class="name-block">
+          <p class="staff-name">Noorsuzila Mohamad</p>
         </div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:noorsuzila@um.edu.my">noorsuzila@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>(603) 7967 3298</div>
+        </div>
+        <div class="faculty-block">Faculty of Medicine</div>
+      </div>
 
-        <div id="mHideSidebar"></div>
-        <div id="lsplitbar" class="splitbar"></div>
+      <div class="staff-card">
+        <img class="avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces" alt="Aruna J.E Thambidorai">
+        <div class="name-block">
+          <p class="staff-name">Aruna J.E Thambidorai</p>
+        </div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:aruna@um.edu.my">aruna@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>(603) 7967 4782</div>
+        </div>
+        <div class="faculty-block">Faculty of Medicine</div>
+      </div>
 
-        <div id="mainPanel">
-            <div id="mainPanelContainer" style="position: relative; width:100%; height: 100%;">
-                <div id="clipFrameScroll" style="position: relative; width:100%; height: 100%; background-color: #ffffff;">
-                    <iframe id="mainFrame" name="mainFrame" width="100%" height="100%" src="about:blank" frameborder="0" style="display: block;position:absolute;" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+      <div class="staff-card">
+        <img class="avatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces" alt="Nuratiqahnadzira Abdul Rani">
+        <div class="name-block">
+          <p class="staff-name">Nuratiqahnadzira Abdul Rani</p>
+        </div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:nuratiqah.ar@um.edu.my">nuratiqah.ar@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>(603) 7967 7003</div>
+        </div>
+        <div class="faculty-block">Faculty of Pharmacy</div>
+      </div>
+
+      <div class="staff-card">
+        <img class="avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces" alt="Aruna J.E Thambidorai">
+        <div class="name-block">
+          <p class="staff-name">Aruna J.E Thambidorai</p>
+        </div>
+        <div class="contact-block">
+          <div><i class="fa-solid fa-envelope"></i><a href="mailto:aruna@um.edu.my">aruna@um.edu.my</a></div>
+          <div><i class="fa-solid fa-phone"></i>(603) 7967 4947</div>
+        </div>
+        <div class="faculty-block">Faculty of Pharmacy</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB 4: Departments (全部默认收起) -->
+  <div class="panel" id="tab4">
+    <div class="accordion">
+
+      <!-- ===== Central Library ===== -->
+      <div class="acc-level1-wrapper">
+        <div class="acc-level1" data-l1="0">
+          <span>Central Library</span>
+          <span class="chevron"><i class="fa-solid fa-chevron-down"></i></span>
+        </div>
+        <div class="acc-level1-body" data-body-l1="0">
+
+          <!-- Level 2: Administration and Strategic Division -->
+          <div class="acc-level2-wrapper">
+            <div class="acc-level2" data-l1="0" data-l2="0">
+              <span>ADMINISTRATION AND STRATEGIC DIVISION</span>
+              <span class="plusminus">+</span>
+            </div>
+            <div class="acc-level2-body" data-body-l1="0" data-body-l2="0">
+
+              <div class="staff-card">
+                <img class="avatar" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces" alt="Noorsuzila Mohamad">
+                <div class="name-block">
+                  <p class="staff-name">Noorsuzila Mohamad</p>
                 </div>
-            </div>
-        </div>
+                <div class="contact-block">
+                  <div><i class="fa-solid fa-envelope"></i><a href="mailto:noorsuzila@um.edu.my">noorsuzila@um.edu.my</a></div>
+                  <div><i class="fa-solid fa-phone"></i>(603) 7967 3298</div>
+                </div>
+                <div class="faculty-block">Faculty of Medicine</div>
+              </div>
 
-        <div id="rsplitbar" class="splitbar"></div>
+              <div class="staff-card">
+                <img class="avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces" alt="Aruna J.E Thambidorai">
+                <div class="name-block">
+                  <p class="staff-name">Aruna J.E Thambidorai</p>
+                </div>
+                <div class="contact-block">
+                  <div><i class="fa-solid fa-envelope"></i><a href="mailto:aruna@um.edu.my">aruna@um.edu.my</a></div>
+                  <div><i class="fa-solid fa-phone"></i>(603) 7967 4782</div>
+                </div>
+                <div class="faculty-block">Faculty of Medicine</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Level 2: Collection Development Section -->
+          <div class="acc-level2-wrapper">
+            <div class="acc-level2" data-l1="0" data-l2="1">
+              <span>COLLECTION DEVELOPMENT SECTION</span>
+              <span class="plusminus">+</span>
+            </div>
+            <div class="acc-level2-body" data-body-l1="0" data-body-l2="1">
+              <!-- Add staff-card blocks here -->
+            </div>
+          </div>
+
+          <!-- Level 2: Cataloguing Unit -->
+          <div class="acc-level2-wrapper">
+            <div class="acc-level2" data-l1="0" data-l2="2">
+              <span>CATALOGUING UNIT</span>
+              <span class="plusminus">+</span>
+            </div>
+            <div class="acc-level2-body" data-body-l1="0" data-body-l2="2">
+              <!-- Add staff-card blocks here -->
+            </div>
+          </div>
+
+          <!-- Level 2: User Services Section -->
+          <div class="acc-level2-wrapper">
+            <div class="acc-level2" data-l1="0" data-l2="3">
+              <span>USER SERVICES SECTION</span>
+              <span class="plusminus">+</span>
+            </div>
+            <div class="acc-level2-body" data-body-l1="0" data-body-l2="3">
+              <!-- Add staff-card blocks here -->
+            </div>
+          </div>
+
+          <!-- Level 2: User Education Section -->
+          <div class="acc-level2-wrapper">
+            <div class="acc-level2" data-l1="0" data-l2="4">
+              <span>USER EDUCATION SECTION</span>
+              <span class="plusminus">+</span>
+            </div>
+            <div class="acc-level2-body" data-body-l1="0" data-body-l2="4">
+              <!-- Add staff-card blocks here -->
+            </div>
+          </div>
+
+          <!-- Level 2: Technology Management Section -->
+          <div class="acc-level2-wrapper">
+            <div class="acc-level2" data-l1="0" data-l2="5">
+              <span>TECHNOLOGY MANAGEMENT SECTION</span>
+              <span class="plusminus">+</span>
+            </div>
+            <div class="acc-level2-body" data-body-l1="0" data-body-l2="5">
+              <!-- Add staff-card blocks here -->
+            </div>
+          </div>
+
+          <!-- Level 2: Research Services Section -->
+          <div class="acc-level2-wrapper">
+            <div class="acc-level2" data-l1="0" data-l2="6">
+              <span>RESEARCH SERVICES SECTION</span>
+              <span class="plusminus">+</span>
+            </div>
+            <div class="acc-level2-body" data-body-l1="0" data-body-l2="6">
+              <!-- Add staff-card blocks here -->
+            </div>
+          </div>
+
+          <!-- Level 2: Conservation & Preservation Unit -->
+          <div class="acc-level2-wrapper">
+            <div class="acc-level2" data-l1="0" data-l2="7">
+              <span>CONSERVATION &amp; PRESERVATION UNIT</span>
+              <span class="plusminus">+</span>
+            </div>
+            <div class="acc-level2-body" data-body-l1="0" data-body-l2="7">
+              <!-- Add staff-card blocks here -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ===== Branch Libraries ===== -->
+      <div class="acc-level1-wrapper">
+        <div class="acc-level1" data-l1="1">
+          <span>Branch Libraries</span>
+          <span class="chevron"><i class="fa-solid fa-chevron-down"></i></span>
+        </div>
+        <div class="acc-level1-body" data-body-l1="1">
+          <!-- Add acc-level2-wrapper blocks here -->
+        </div>
+      </div>
+
+      <!-- ===== Special Libraries ===== -->
+      <div class="acc-level1-wrapper">
+        <div class="acc-level1" data-l1="2">
+          <span>Special Libraries</span>
+          <span class="chevron"><i class="fa-solid fa-chevron-down"></i></span>
+        </div>
+        <div class="acc-level1-body" data-body-l1="2">
+          <!-- Add acc-level2-wrapper blocks here -->
+        </div>
+      </div>
+
+      <!-- ===== UM archive ===== -->
+      <div class="acc-level1-wrapper">
+        <div class="acc-level1" data-l1="3">
+          <span>UM archive</span>
+          <span class="chevron"><i class="fa-solid fa-chevron-down"></i></span>
+        </div>
+        <div class="acc-level1-body" data-body-l1="3">
+          <!-- Add acc-level2-wrapper blocks here -->
+        </div>
+      </div>
 
     </div>
+  </div>
 
-    <div id="maximizePanelContainer" class="maximizePanelContainer">
-        <div id="maximizePanelOver">
-            <div id="maximizePanel" title="Expand" class="maximizePanelOver">
-                <div id="maximizeButton" class="maximizeButton maximizeIcon"></div>
-            </div>
-        </div>
-    </div>
+</div>
 
-    <div id="mobileControlFrameContainer"></div>
+<script>
+  // ===== Tab switching =====
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  const panels = document.querySelectorAll(".panel");
 
-<!-- 9.0.0.3744 -->
-<script src="resources/scripts/jquery-3.2.1.min.js"></script>
-<script src="resources/scripts/axure/jquery.nicescroll.min.js"></script>
-<script src="resources/scripts/axutils.js"></script>
-<script src="resources/scripts/messagecenter.js"></script>
-<script src="resources/scripts/player/axplayer.js"></script>
-<script src="resources/scripts/player/init.js"></script>
+  tabButtons.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      tabButtons.forEach(b=>b.classList.remove("active"));
+      panels.forEach(p=>p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.tab).classList.add("active");
+    });
+  });
 
+  // ===== Departments Accordion =====
+  document.querySelectorAll(".acc-level1").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const idx = el.dataset.l1;
+      const body = document.querySelector(`.acc-level1-body[data-body-l1="${idx}"]`);
+      el.classList.toggle("open");
+      body.classList.toggle("open");
+    });
+  });
+
+  document.querySelectorAll(".acc-level2").forEach(el=>{
+    el.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      const l1 = el.dataset.l1;
+      const l2 = el.dataset.l2;
+      const body = document.querySelector(`.acc-level2-body[data-body-l1="${l1}"][data-body-l2="${l2}"]`);
+      const isOpen = body.classList.toggle("open");
+      el.querySelector(".plusminus").innerHTML = isOpen ? "&minus;" : "+";
+    });
+  });
+</script>
 
 </body>
 </html>
